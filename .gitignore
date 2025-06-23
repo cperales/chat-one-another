@@ -2,5 +2,6 @@
 env/
 
 # Files
+*.json
 *.md
 !README.md

@@ -1,12 +1,19 @@
+import json
 import requests
 import re
 
 OLLAMA_HOST = "http://localhost:11434"
-# MODEL_A = "llama3.2"  # Replace with your model A name
-# MODEL_B = "phi4-mini"  # Replace with your model B name
-MODEL_A = MODEL_B = "qwen3:latest"
-# MODEL_A = MODEL_B = "deepseek-r1:1.5b"
-INITIAL_PROMPT = "Hi! How are you?"  # Replace with your desired prompt
+
+# Load configuration for models and prompts
+CONFIG_PATH = "config.json"
+with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+    _cfg = json.load(f)
+
+MODEL_A = _cfg.get("model_a", "qwen3:latest")
+MODEL_B = _cfg.get("model_b", "qwen3:latest")
+INITIAL_PROMPT = _cfg.get("initial_prompt", "Hi! How are you?")
+ITERATIONS = int(_cfg.get("iterations", 100))
+CHAT_HISTORY_FILE = _cfg.get("chat_history", "chat_history.md")
 
 
 def remove_think_tags(text):
@@ -19,7 +26,10 @@ def remove_think_tags(text):
 
 def query_ollama(model, prompt, history):
     url = f"{OLLAMA_HOST}/v1/chat/completions"
-    payload = {"model": model, "messages": history + [{"role": "user", "content": prompt}]}
+    payload = {
+        "model": model,
+        "messages": history + [{"role": "user", "content": prompt}],
+    }
     response = requests.post(url, json=payload)
     response.raise_for_status()
     data = response.json()
@@ -34,7 +44,7 @@ def main(initial_prompt=INITIAL_PROMPT):
     history_b = list()
     response_b = initial_prompt
 
-    for i in range(100):
+    for i in range(ITERATIONS):
         print(f"\n=== Loop {i} ===")
         # Send model B's response to model A
         response_a, history_a = query_ollama(MODEL_A, response_b, history=history_a)
@@ -45,7 +55,7 @@ def main(initial_prompt=INITIAL_PROMPT):
         response_b, history_b = query_ollama(MODEL_B, response_a, history=history_b)
         print(f"Response from B ({MODEL_B}):\n{response_b}\n")
 
-        with open("chat_history.md", "a", encoding="utf-8") as f:
+        with open(CHAT_HISTORY_FILE, "a", encoding="utf-8") as f:
             f.write(f"### Loop {i}\n")
             f.write(f"**A ({MODEL_A})**:\n{response_a}\n\n")
             f.write(f"**B ({MODEL_B})**:\n{response_b}\n\n")

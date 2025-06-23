@@ -14,16 +14,21 @@ This repository contains a simple Python script that lets two local language mod
    ```bash
    pip install -r requirements.txt
    ```
-2. Optionally edit `script.py` to adjust the models (`MODEL_A` and `MODEL_B`) or the starting prompt.
+2. Add a `config.json` to adjust the models (`model_a` and `model_b`), the starting prompt, the number of conversation turns, or the output file name. You can copy the `config.json.example`.
+   ```bash
+   cp config.json.example config.json
+   ```
+
 3. Run the script:
    ```bash
    python script.py
    ```
-4. Conversation turns are logged to `chat_history.md` in Markdown format.
+4. Conversation turns are logged to the file specified by `chat_history` in `config.json`.
 
 ## Project Files
 
+- `config.json` – stores model names, the initial prompt, iteration count, and output file location.
 - `script.py` – orchestrates the conversation between the two models.
 - `requirements.txt` – lists the Python dependency.
-- `chat_history.md` – created when the script runs and stores the dialogue.
+- history file (default `chat_history.md`) – created when the script runs and stores the dialogue.
 

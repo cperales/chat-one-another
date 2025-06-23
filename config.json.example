@@ -1,0 +1,7 @@
+{
+  "model_a": "qwen3:latest",
+  "model_b": "qwen3:latest",
+  "initial_prompt": "Hi! How are you?",
+  "iterations": 100,
+  "chat_history": "chat_history.md"
+}
