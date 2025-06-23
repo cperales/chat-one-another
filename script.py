@@ -6,7 +6,7 @@ OLLAMA_HOST = "http://localhost:11434"
 # MODEL_B = "phi4-mini"  # Replace with your model B name
 MODEL_A = MODEL_B = "qwen3:latest"
 # MODEL_A = MODEL_B = "deepseek-r1:1.5b"
-PROMPT = "Hi! How are you?"  # Replace with your desired prompt
+INITIAL_PROMPT = "Hi! How are you?"  # Replace with your desired prompt
 
 
 def remove_think_tags(text):
@@ -28,7 +28,7 @@ def query_ollama(model, prompt, history):
     return content, history
 
 
-def main(initial_prompt=PROMPT):
+def main(initial_prompt=INITIAL_PROMPT):
     print(f"Initial prompt: {initial_prompt}")
     history_a = list()
     history_b = list()
