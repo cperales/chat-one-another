@@ -1,12 +1,18 @@
+import json
 import requests
 import re
 
 OLLAMA_HOST = "http://localhost:11434"
-# MODEL_A = "llama3.2"  # Replace with your model A name
-# MODEL_B = "phi4-mini"  # Replace with your model B name
-MODEL_A = MODEL_B = "qwen3:latest"
-# MODEL_A = MODEL_B = "deepseek-r1:1.5b"
-INITIAL_PROMPT = "Hi! How are you?"  # Replace with your desired prompt
+
+# Load configuration for models and prompts
+CONFIG_PATH = "config.json"
+with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+    _cfg = json.load(f)
+
+MODEL_A = _cfg.get("model_a", "qwen3:latest")
+MODEL_B = _cfg.get("model_b", "qwen3:latest")
+INITIAL_PROMPT = _cfg.get("initial_prompt", "Hi! How are you?")
+MAX_TOKENS = int(_cfg.get("max_tokens", 0))  # 0 for unlimited
 
 
 def remove_think_tags(text):
@@ -19,7 +25,12 @@ def remove_think_tags(text):
 
 def query_ollama(model, prompt, history):
     url = f"{OLLAMA_HOST}/v1/chat/completions"
-    payload = {"model": model, "messages": history + [{"role": "user", "content": prompt}]}
+    payload = {
+        "model": model,
+        "messages": history + [{"role": "user", "content": prompt}],
+    }
+    if MAX_TOKENS > 0:
+        payload["options"] = {"num_predict": MAX_TOKENS}
     response = requests.post(url, json=payload)
     response.raise_for_status()
     data = response.json()

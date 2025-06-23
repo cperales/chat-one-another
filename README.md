@@ -14,7 +14,7 @@ This repository contains a simple Python script that lets two local language mod
    ```bash
    pip install -r requirements.txt
    ```
-2. Optionally edit `script.py` to adjust the models (`MODEL_A` and `MODEL_B`) or the starting prompt.
+2. Edit `config.json` to adjust the models (`model_a` and `model_b`), the starting prompt, or the maximum number of tokens returned per response.
 3. Run the script:
    ```bash
    python script.py
@@ -23,6 +23,7 @@ This repository contains a simple Python script that lets two local language mod
 
 ## Project Files
 
+- `config.json` – stores model names, the initial prompt, and token limits.
 - `script.py` – orchestrates the conversation between the two models.
 - `requirements.txt` – lists the Python dependency.
 - `chat_history.md` – created when the script runs and stores the dialogue.
