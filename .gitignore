@@ -3,3 +3,4 @@ env/
 
 # Files
 *.md
+!README.md
