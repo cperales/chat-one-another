@@ -12,7 +12,8 @@ with open(CONFIG_PATH, "r", encoding="utf-8") as f:
 MODEL_A = _cfg.get("model_a", "qwen3:latest")
 MODEL_B = _cfg.get("model_b", "qwen3:latest")
 INITIAL_PROMPT = _cfg.get("initial_prompt", "Hi! How are you?")
-MAX_TOKENS = int(_cfg.get("max_tokens", 0))  # 0 for unlimited
+ITERATIONS = int(_cfg.get("iterations", 100))
+CHAT_HISTORY_FILE = _cfg.get("chat_history", "chat_history.md")
 
 
 def remove_think_tags(text):
@@ -29,8 +30,6 @@ def query_ollama(model, prompt, history):
         "model": model,
         "messages": history + [{"role": "user", "content": prompt}],
     }
-    if MAX_TOKENS > 0:
-        payload["options"] = {"num_predict": MAX_TOKENS}
     response = requests.post(url, json=payload)
     response.raise_for_status()
     data = response.json()
@@ -45,7 +44,7 @@ def main(initial_prompt=INITIAL_PROMPT):
     history_b = list()
     response_b = initial_prompt
 
-    for i in range(100):
+    for i in range(ITERATIONS):
         print(f"\n=== Loop {i} ===")
         # Send model B's response to model A
         response_a, history_a = query_ollama(MODEL_A, response_b, history=history_a)
@@ -56,7 +55,7 @@ def main(initial_prompt=INITIAL_PROMPT):
         response_b, history_b = query_ollama(MODEL_B, response_a, history=history_b)
         print(f"Response from B ({MODEL_B}):\n{response_b}\n")
 
-        with open("chat_history.md", "a", encoding="utf-8") as f:
+        with open(CHAT_HISTORY_FILE, "a", encoding="utf-8") as f:
             f.write(f"### Loop {i}\n")
             f.write(f"**A ({MODEL_A})**:\n{response_a}\n\n")
             f.write(f"**B ({MODEL_B})**:\n{response_b}\n\n")
