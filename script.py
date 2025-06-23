@@ -40,11 +40,14 @@ def query_ollama(model, prompt, history):
 
 def main(initial_prompt=INITIAL_PROMPT):
     print(f"Initial prompt: {initial_prompt}")
+    with open(CHAT_HISTORY_FILE, "a", encoding="utf-8") as f:
+            f.write(f"### Loop 0\n")
+            f.write(f"**Initial prompot**:\n{initial_prompt}\n\n")
     history_a = list()
     history_b = list()
     response_b = initial_prompt
 
-    for i in range(ITERATIONS):
+    for i in range(1, ITERATIONS + 1):
         print(f"\n=== Loop {i} ===")
         # Send model B's response to model A
         response_a, history_a = query_ollama(MODEL_A, response_b, history=history_a)
