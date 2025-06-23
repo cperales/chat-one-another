@@ -14,7 +14,11 @@ This repository contains a simple Python script that lets two local language mod
    ```bash
    pip install -r requirements.txt
    ```
-2. Edit `config.json` to adjust the models (`model_a` and `model_b`), the starting prompt, the number of conversation turns, or the output file name.
+2. Add a `config.json` to adjust the models (`model_a` and `model_b`), the starting prompt, the number of conversation turns, or the output file name. You can copy the `config.json.example`.
+   ```bash
+   cp config.json.example config.json
+   ```
+
 3. Run the script:
    ```bash
    python script.py
