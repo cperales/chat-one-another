@@ -40,9 +40,17 @@ def query_ollama(model, prompt, history):
         if not line:
             continue
 
+        # Remove SSE "data:" prefix if present
+        if line.startswith("data:"):
+            line = line[len("data:"):].strip()
+        if line == "[DONE]":
+            break
+
         try:
             data = json.loads(line)
         except json.JSONDecodeError:
+            # Skip malformed JSON but keep collecting
+            print(f"\n[warn] bad json chunk: {line}", flush=True)
             continue
 
         # handle both openai-compatible and ollama native streaming formats
@@ -63,6 +71,11 @@ def query_ollama(model, prompt, history):
     print()
     content = "".join(collected)
     content = remove_think_tags(content)
+
+    # Update conversation history so models keep context
+    history.append({"role": "user", "content": prompt})
+    history.append({"role": "assistant", "content": content})
+
     return content, history
 
 
