@@ -29,11 +29,39 @@ def query_ollama(model, prompt, history):
     payload = {
         "model": model,
         "messages": history + [{"role": "user", "content": prompt}],
+        "stream": True,
     }
-    response = requests.post(url, json=payload)
+
+    response = requests.post(url, json=payload, stream=True)
     response.raise_for_status()
-    data = response.json()
-    content = data['choices'][0]['message']['content']
+
+    collected = []
+    for line in response.iter_lines(decode_unicode=True):
+        if not line:
+            continue
+
+        try:
+            data = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+
+        # handle both openai-compatible and ollama native streaming formats
+        token = ""
+        if "choices" in data:
+            delta = data["choices"][0].get("delta", {})
+            token = delta.get("content", "")
+        elif "message" in data:
+            token = data["message"].get("content", "")
+
+        if token:
+            print(token, end="", flush=True)
+            collected.append(token)
+
+        if data.get("done") or data.get("choices", [{}])[0].get("finish_reason"):
+            break
+
+    print()
+    content = "".join(collected)
     content = remove_think_tags(content)
     return content, history
 
