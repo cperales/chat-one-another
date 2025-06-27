@@ -36,9 +36,11 @@ def query_ollama(model, prompt, history):
     response.raise_for_status()
 
     collected = []
-    for line in response.iter_lines(decode_unicode=True):
-        if not line:
+    for raw_line in response.iter_lines(decode_unicode=False):
+        if not raw_line:
             continue
+        # decode explicitly as UTF-8 to avoid issues with autodetection
+        line = raw_line.decode("utf-8", errors="replace")
 
         # Remove SSE "data:" prefix if present
         if line.startswith("data:"):
