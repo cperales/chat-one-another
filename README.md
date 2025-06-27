@@ -23,6 +23,7 @@ This repository contains a simple Python script that lets two local language mod
    ```bash
    python script.py
    ```
+   The assistant responses will stream to the console as they are generated.
 4. Conversation turns are logged to the file specified by `chat_history` in `config.json`.
 
 ## Project Files
